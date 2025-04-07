@@ -1,26 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  {% load static %}
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>My Website</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>QuickLink | URL Shortener</title>
+  <link rel="stylesheet" href="{% static 'url_shortner/css/style.css' %}" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 </head>
 <body>
-  <header>
-    <h1>Welcome to My Website</h1>
-  </header>
+  <div class="container">
+    <header>
+      <h1><i class="fas fa-link"></i> QuickLink</h1>
+      <p class="tagline">Simplify your links in seconds</p>
+    </header>
 
-  <main>
-    <p>It's Working!!</p>
-  </main>
+    <main>
+      <div class="url-form">
+        <form method="post" action="">
+          {% csrf_token %}
+          <div class="input-group">
+            <input type="url" name="original_url" placeholder="Paste your long URL here..." required />
+            <button type="submit">Shorten</button>
+          </div>
+        </form>
+      </div>
 
-  <footer>
-    <p>&copy; 2025 My Website</p>
-  </footer>
+      {% if short_url %}
+      <div class="result">
+        <h3>Your shortened URL:</h3>
+        <div class="shortened-url">
+          <p id="short-url-text">{{ request.scheme }}://{{ request.get_host }}/{{ short_url }}</p>
+          <button onclick="copyToClipboard()" class="copy-btn">
+            <i class="fas fa-copy"></i>
+          </button>
+        </div>
+        <p class="success-message" id="copy-message"></p>
+      </div>
+      {% endif %}
 
-  <script src="script.js"></script>
+      {% if error %}
+      <div class="error">
+        <p>{{ error }}</p>
+      </div>
+      {% endif %}
+    </main>
+
+    <section class="features">
+      <div class="feature">
+        <i class="fas fa-bolt"></i>
+        <h3>Fast</h3>
+        <p>Generate short links instantly</p>
+      </div>
+      <div class="feature">
+        <i class="fas fa-lock"></i>
+        <h3>Secure</h3>
+        <p>Your data is protected</p>
+      </div>
+      <div class="feature">
+        <i class="fas fa-share-alt"></i>
+        <h3>Shareable</h3>
+        <p>Easy to share on any platform</p>
+      </div>
+    </section>
+
+    <footer>
+      <p>&copy; {% now "Y" %} | URL Shortener</p>
+    </footer>
+  </div>
+
+  <script>
+    function copyToClipboard() {
+      const shortUrl = document.getElementById('short-url-text');
+      const message = document.getElementById('copy-message');
+      
+      // Create a temporary input element
+      const tempInput = document.createElement('input');
+      tempInput.value = shortUrl.textContent;
+      document.body.appendChild(tempInput);
+      
+      // Select and copy the text
+      tempInput.select();
+      document.execCommand('copy');
+      
+      // Remove the temporary element
+      document.body.removeChild(tempInput);
+      
+      // Show success message
+      message.textContent = "Copied to clipboard!";
+      
+      // Hide message after 2 seconds
+      setTimeout(() => {
+        message.textContent = "";
+      }, 2000);
+    }
+  </script>
 </body>
 </html>
-
